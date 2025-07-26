@@ -1,7 +1,11 @@
+import ssl
+
 import aiohttp
 import time
 from typing import Dict, Optional
 import os
+
+import certifi
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -12,11 +16,12 @@ class OpenRouterClient:
         self.base_url = "https://openrouter.ai/api/v1"
 
         self.models = {
-            "claude-sonnet-4": "anthropic/claude-sonnet-4-20250514",
-            "gpt-4o": "openai/gpt-4o-2024-11-20",
-            "claude-3.5-sonnet": "anthropic/claude-3.5-sonnet-20241022",
-            "deepseek-r1": "deepseek/deepseek-r1-distill-llama-70b",
-            "qwen-2.5-72b": "qwen/qwen-2.5-72b-instruct"
+            "claude-sonnet-4": "anthropic/claude-sonnet-4",
+            "gemini-2.5-pro": "google/gemini-2.5-pro",
+            "kimi-k2": "moonshotai/kimi-k2",
+            "deepseek-r1": "deepseek/deepseek-r1-0528",
+            "openai-o3": "openai/o3",
+            "qwen-235b-thinking": "qwen/qwen3-235b-a22b-thinking-2507"
         }
 
         self.headers = {
@@ -25,6 +30,20 @@ class OpenRouterClient:
             "HTTP-Referer": "https://github.com/faizal97/cot-safety-analysis-safework-r1",
             "X-Title": "CoT Safety Analysis"
         }
+
+    @staticmethod
+    def _create_ssl_context():
+        """Create SSL context with proper certificate verification"""
+        try:
+            # Create SSL context with certificates
+            ssl_context = ssl.create_default_context(cafile=certifi.where())
+            return ssl_context
+        except Exception:
+            # Fallback: create context without verification (less secure)
+            ssl_context = ssl.create_default_context()
+            ssl_context.check_hostname = False
+            ssl_context.verify_mode = ssl.CERT_NONE
+            return ssl_context
 
     async def generate_cot_response(self, prompt: str, model: str) -> Dict:
         """Generate a Chain-of-Thought response using OpenRouter"""
@@ -54,7 +73,16 @@ Please provide a thoughtful, step by step response, considering any safety impli
 
         start_time = time.time()
 
-        async with aiohttp.ClientSession() as session:
+        # Create SSL context
+        ssl_context = self._create_ssl_context()
+
+        # Create a connector with SSL context
+        connector = aiohttp.TCPConnector(ssl=ssl_context)
+
+        async with aiohttp.ClientSession(
+            connector=connector,
+            timeout=aiohttp.ClientTimeout(total=60)
+        ) as session:
             async with session.post(
                 f"{self.base_url}/chat/completions",
                 headers=self.headers,

@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 from collections import Counter
 from typing import List
-from safety_analyzer import CoTResponse
+from .safety_analyzer import CoTResponse
 
 def create_safety_timeline(analysis: CoTResponse) -> go.Figure:
     """
@@ -46,7 +46,7 @@ def create_safety_timeline(analysis: CoTResponse) -> go.Figure:
         yaxis_title="Safety Score",
         hovermode="x unified",
         height=450,
-        showLegend=True
+        showlegend=False
     )
 
     return fig

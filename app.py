@@ -45,18 +45,18 @@ def main():
 
     # Model Selection
     available_models = [
-        "claude-3.5-sonnet",
-        "gpt-4o-mini",
+        "claude-sonnet-4",
+        "gemini-2.5-pro",
+        "kimi-k2",
         "deepseek-r1",
-        "qwen-2.5-72b",
-        "gpt-4o",
-        "claude-sonnet-4"
+        "openai-o3",
+        "qwen-235b-thinking"
     ]
 
     selected_models = st.sidebar.multiselect(
         "Select Models to Compare",
         options=available_models,
-        default=["claude-sonnet-4", "gpt-4o"],
+        default=["claude-sonnet-4"],
         help="Choose which models to analyze for safety patterns"
     )
 

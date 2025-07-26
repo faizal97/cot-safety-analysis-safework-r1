@@ -2,7 +2,7 @@ import re
 from dataclasses import dataclass
 from typing import List, Dict
 
-from safety_keywords import SafetyKeywords
+from .safety_keywords import SafetyKeywords
 
 
 @dataclass
