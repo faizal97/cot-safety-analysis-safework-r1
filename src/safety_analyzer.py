@@ -1,7 +1,9 @@
 import re
-from typing import List, Dict, Tuple
 from dataclasses import dataclass
-from .safety_keywords import SafetyKeywords
+from typing import List, Dict
+
+from safety_keywords import SafetyKeywords
+
 
 @dataclass
 class SafetyAnalysis:
@@ -28,7 +30,8 @@ class SafetyAnalyzer:
     def __init__(self):
         self.keywords = SafetyKeywords()
 
-    def extract_thinking_steps(self, text: str) -> List[str]:
+    @staticmethod
+    def extract_thinking_steps(text: str) -> List[str]:
         """Extract individual thinking steps from CoT text"""
 
         # Remove common CoT markers
@@ -47,7 +50,8 @@ class SafetyAnalyzer:
 
         return steps[:15] # limit for analysis
 
-    def detect_safety_peak(self, current_score: float, previous_score: List[float], threshold_multiplier: float = 2.0) -> bool:
+    @staticmethod
+    def detect_safety_peak(current_score: float, previous_score: List[float], threshold_multiplier: float = 2.0) -> bool:
         """
         Detect if the current step is a 'safety aha moment'
         Implements the Safety MI Peaks concept from SafeWork-R1
